@@ -1,21 +1,29 @@
-from OpenGL.GL import *  # Import OpenGL functions
-from OpenGL.GLUT import *  # Import GLUT for window management
-from OpenGL.GLU import * # Import GLU for OpenGL utilities
+from OpenGL.GL import *
+from OpenGL.GLUT import *
+from OpenGL.GLU import *
 
 
 def display(): 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)  # Clear the screen
-   # Draw a point
-  glutSwapBuffers()  # Swap buffers to display the screen
+
+  # glColor3f(1.0, 0.0, 0.0)  # Set color to red (RGB format)
+  # glPointSize(5)
+
+  glBegin(GL_POINTS)
+  glVertex2f(0.0, 0.0)  # Draw a point at the center of the window
+  glEnd()
+
+  glutSwapBuffers()  # Swap buffers to display the point
+
 
 def main():
-  glutInit()  # Initialize GLUT
-  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB)  # Set display mode (double buffering, RGB)
-  glutInitWindowSize(300, 300)  # Set window size
-  glutCreateWindow(b"OpenGL the blank window")  # Create a window with a title
-  glClearColor(1.0, 0.0, 0.0, 0.0)  # Set background color to black
-  glutDisplayFunc(display)  # Register the display function
-  glutMainLoop()  # Start the main loop
+  glutInit()
+  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB)
+  glutInitWindowSize(700, 700)
+  glutCreateWindow(b"OpenGL Single Point")
+  glClearColor(0.0, 0.0, 0.0, 1.0)  # Set background color to black
+  glutDisplayFunc(display)
+  glutMainLoop()
 
 if __name__ == "__main__":
-  main()  # Run the program
+  main()
