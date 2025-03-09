@@ -9,7 +9,7 @@ def display():
     glPointSize(5)  # Set point size
 
     glBegin(GL_POINTS)  # Start drawing points
-    glVertex2f(0.0, 0.0)  # Draw a point at the center of the window
+    glVertex2f(-0.3, 0.2)  # Draw a point at the center of the window
     
     glEnd()  # End drawing
 

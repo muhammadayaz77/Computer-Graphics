@@ -4,6 +4,7 @@ from OpenGL.GLU import *  # Import GLU for OpenGL utilities
 
 def display():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)  # Clear the screen
+    
     glutSwapBuffers()  # Swap buffers to display the screen
 
 def main():

@@ -1,0 +1,24 @@
+code for triangle 
+
+index.py
+simple triangle
+
+ """
+    Draws a circle using OpenGL.
+
+    Parameters:
+    radius (float): The radius of the circle.
+    num_segments (int): The number of segments to divide the circle into. 
+              More segments result in a smoother circle.
+
+    The function calculates the angle for each vertex using the formula:
+    angle = 2 * π * i / num_segments
+
+    For each vertex, the x and y coordinates are calculated as:
+    x = radius * cos(angle)
+    y = radius * sin(angle)
+
+    The vertices are then specified using glVertex2f(x, y).
+    """
+
+index2.py

@@ -2,6 +2,7 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 
+
 def draw_line():
     glColor3f(1.0, 1.0, 0.0)  # Set color to yellow
     glPointSize(5)  # Set point size
@@ -14,7 +15,7 @@ def draw_line():
 
     glBegin(GL_POINTS)  # Start drawing points
     x = x1
-    while x <= x2:  # Iterate through x values
+    while x <= x2 :  # Iterate through x values
         y = m * x + c  # Calculate y using y = mx + c
         glVertex2f(x, y)  # Plot point
         x += 0.01  # Increment x for smooth plotting

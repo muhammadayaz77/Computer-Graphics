@@ -6,13 +6,23 @@ from OpenGL.GLU import *
 def display(): 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)  # Clear the screen
 
-  # glColor3f(1.0, 0.0, 0.0)  # Set color to red (RGB format)
-  # glPointSize(5)
+  # Draw a line
+  glColor3f(1.0, 1.0, 1.0)  # Set the color to black
+  glLineWidth(15)
 
-  glBegin(GL_POINTS)
-  glVertex2f(0.0, 0.0)  # Draw a point at the center of the window
+  glBegin(GL_LINES)
+  
+  glVertex2f(-0.5, 0.5)
+  glVertex2f(0.5, -0.5)
   glEnd()
+  glColor3f(1.0, 1.0, 1.0)  # Set the color to black
+  glLineWidth(15)
 
+  glBegin(GL_LINES)
+  
+  glVertex2f(0.5, 0.5)
+  glVertex2f(-0.5, -0.5)
+  glEnd()
   glutSwapBuffers()  # Swap buffers to display the point
 
 
@@ -21,7 +31,7 @@ def main():
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB)
   glutInitWindowSize(700, 700)
   glutCreateWindow(b"OpenGL Single Point")
-  glClearColor(0.0, 0.0, 0.0, 1.0)  # Set background color to black
+  glClearColor(.0, .0, .0, 1.0)  # Set background color to black
   glutDisplayFunc(display)
   glutMainLoop()
 
