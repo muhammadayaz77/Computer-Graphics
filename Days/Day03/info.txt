@@ -1,12 +1,13 @@
-code for triangle 
+code for Circle 
 
 index.py
-simple triangle
+simple Circle
 
  """
     Draws a circle using OpenGL.
 
     Parameters:
+    Circle at the origin
     radius (float): The radius of the circle.
     num_segments (int): The number of segments to divide the circle into. 
               More segments result in a smoother circle.
@@ -22,3 +23,14 @@ simple triangle
     """
 
 index2.py
+
+to draw a circle not at the origin 
+
+
+index3.py
+4-way symmetrics
+
+
+index4.py
+8-way stmmetrics
+
