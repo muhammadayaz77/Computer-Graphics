@@ -1,93 +1,143 @@
-import math
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
+import math
 
-def draw_circle(xc, yc, radius, num_segments=100):
-    """Draws a circle at (xc, yc) with given radius."""
-    glBegin(GL_LINE_LOOP)
-    for i in range(num_segments):
-        theta = 2.0 * math.pi * i / num_segments
-        x = radius * math.cos(theta) + xc
-        y = radius * math.sin(theta) + yc
-        glVertex2f(x, y)
+global cycle_x, pedal_angle
+cycle_x = -100
+pedal_angle = 0
+
+def draw_pixel(x, y, r, g, b):
+    glColor3f(r, g, b)
+    glBegin(GL_POINTS)
+    glVertex2f(x, y)
     glEnd()
 
-def draw_line(x1, y1, x2, y2):
-    """Draws a line from (x1, y1) to (x2, y2)."""
-    glBegin(GL_LINES)
-    glVertex2f(x1, y1)
-    glVertex2f(x2, y2)
-    glEnd()
+def midpoint_circle(xc, yc, r, color):
+    x, y = 0, r
+    p = 1 - r
+    while x <= y:
+        for dx, dy in [(x, y), (y, x), (-x, y), (-y, x), 
+        (-x, -y), (-y, -x), (x, -y), (y, -x)]:
+            draw_pixel(xc + dx, yc + dy, *color)
+        x += 1
+        if p < 0:
+            p += 2 * x + 1
+        else:
+            y -= 1
+            p += 2 * (x - y) + 1
 
-def draw_oval(xc, yc, rx, ry, num_segments=100):
-    """Draws an oval at (xc, yc) with given radii."""
-    glBegin(GL_LINE_LOOP)
-    for i in range(num_segments):
-        theta = 2.0 * math.pi * i / num_segments
-        x = rx * math.cos(theta) + xc
-        y = ry * math.sin(theta) + yc
-        glVertex2f(x, y)
-    glEnd()
+def dda(x1, y1, x2, y2, color):
+    dx, dy = x2 - x1, y2 - y1
+    steps = max(abs(dx), abs(dy))
+    x_inc, y_inc = dx / steps, dy / steps
+    x, y = x1, y1
+    for _ in range(int(steps) + 1):
+        draw_pixel(round(x), round(y), *color)
+        x += x_inc
+        y += y_inc
 
-def draw_bicycle():
-    """Draws a properly proportioned bicycle using OpenGL."""
-    glColor3f(1.0, 1.0, 1.0)
-    
-    # Draw wheels
-    rear_wheel_center = (-0.5, -0.5)
-    front_wheel_center = (0.5, -0.5)
-    wheel_radius = 0.3
-    draw_circle(*rear_wheel_center, wheel_radius)  
-    draw_circle(*front_wheel_center, wheel_radius)  
-    
-    # Draw wheel spokes
+def draw_wheel_lines(xc, yc, r, color):
     for angle in range(0, 360, 30):
         rad = math.radians(angle)
-        for center in [rear_wheel_center, front_wheel_center]:
-            draw_line(center[0], center[1], 
-                      center[0] + wheel_radius * math.cos(rad), 
-                      center[1] + wheel_radius * math.sin(rad))
+        x = xc + r * math.cos(rad)
+        y = yc + r * math.sin(rad)
+        dda(xc, yc, x, y, color)
 
-    # Frame adjustments
-    seat_post = (0.0, 0.0)
-    top_tube = (0.2, -0.1)
-    handlebar_post = (0.4, -0.2)
+def draw_pedals(xc, yc, r, color):
+    global pedal_angle
+    pedal_rad = math.radians(-pedal_angle)
+    
+    # Calculate pedal positions (reversed direction)
+    pedal_x1 = xc - r * math.cos(pedal_rad)  # Reversed direction
+    pedal_y1 = yc - r * math.sin(pedal_rad)  # Reversed direction
+    pedal_x2 = xc + r * math.cos(pedal_rad)  # Reversed direction
+    pedal_y2 = yc + r * math.sin(pedal_rad)  # Reversed direction
+    
+    # Draw pedal arms
+    dda(xc, yc, pedal_x1, pedal_y1, color)
+    dda(xc, yc, pedal_x2, pedal_y2, color)
+    
+    # Draw rectangular pedal bodies
+    pedal_width = 10
+    pedal_height = 5
+    
+    # Pedal 1
+    dda(pedal_x1 - pedal_width // 2, pedal_y1 - pedal_height // 2, 
+        pedal_x1 + pedal_width // 2, pedal_y1 - pedal_height // 2, color)
+    dda(pedal_x1 + pedal_width // 2, pedal_y1 - pedal_height // 2, 
+        pedal_x1 + pedal_width // 2, pedal_y1 + pedal_height // 2, color)
+    dda(pedal_x1 + pedal_width // 2, pedal_y1 + pedal_height // 2, 
+        pedal_x1 - pedal_width // 2, pedal_y1 + pedal_height // 2, color)
+    dda(pedal_x1 - pedal_width // 2, pedal_y1 + pedal_height // 2, 
+        pedal_x1 - pedal_width // 2, pedal_y1 - pedal_height // 2, color)
+    
+    # Pedal 2
+    dda(pedal_x2 - pedal_width // 2, pedal_y2 - pedal_height // 2, 
+        pedal_x2 + pedal_width // 2, pedal_y2 - pedal_height // 2, color)
+    dda(pedal_x2 + pedal_width // 2, pedal_y2 - pedal_height // 2, 
+        pedal_x2 + pedal_width // 2, pedal_y2 + pedal_height // 2, color)
+    dda(pedal_x2 + pedal_width // 2, pedal_y2 + pedal_height // 2, 
+        pedal_x2 - pedal_width // 2, pedal_y2 + pedal_height // 2, color)
+    dda(pedal_x2 - pedal_width // 2, pedal_y2 + pedal_height // 2, 
+        pedal_x2 - pedal_width // 2, pedal_y2 - pedal_height // 2, color)
+    
+    # Draw pedal grips (small circles at the ends)
+    midpoint_circle(pedal_x1, pedal_y1, 3, color)
+    midpoint_circle(pedal_x2, pedal_y2, 3, color)
 
-    draw_line(*rear_wheel_center, *seat_post)   # Rear wheel to seat post
-    draw_line(*seat_post, *front_wheel_center)  # Seat post to front wheel
-    draw_line(*rear_wheel_center, *top_tube)    # Rear wheel to top tube
-    draw_line(*top_tube, *front_wheel_center)   # Top tube to front wheel
-    draw_line(*seat_post, *top_tube)            # Seat post to top tube
-
-    # Handlebars - fixed unpacking issue
-    draw_line(*front_wheel_center, *handlebar_post)
-    draw_line(handlebar_post[0], handlebar_post[1], 0.6, -0.1)
-    draw_line(handlebar_post[0], handlebar_post[1], 0.3, -0.1)
-
-    # Pedals - refined shape
-    draw_circle(0.0, -0.2, 0.05)  # Center crank
-    draw_line(0.0, -0.2, -0.06, -0.28)
-    draw_line(0.0, -0.2, 0.06, -0.12)
-
-    # Seat - better alignment
-    draw_oval(0.0, 0.1, 0.12, 0.04)
-
-def display():
+def draw_cycle():
+    global cycle_x
     glClear(GL_COLOR_BUFFER_BIT)
-    draw_bicycle()
+    
+    midpoint_circle(cycle_x - 60, -50, 40, (1, 0, 0))  # Rear Wheel
+    midpoint_circle(cycle_x + 60, -50, 40, (0, 1, 0))  # Front Wheel
+    draw_wheel_lines(cycle_x - 60, -50, 40, (0, 1, 0))
+    draw_wheel_lines(cycle_x + 60, -50, 40, (1, 0, 0))
+    
+    dda(cycle_x - 60, -50, cycle_x, 20, (0.8, 0.5, 0.5))  # Rear Frame
+    dda(cycle_x, 20, cycle_x + 60, -50, (0.8, 0.5, 0.5))  # Front Frame
+    dda(cycle_x - 60, -50, cycle_x + 60, -50, (0.8, 0.5, 0.5))  # Bottom Bar
+    
+    dda(cycle_x, 20, cycle_x, 30, (0.8, 0.5, 0.5))  # Lowered Seat Post
+    dda(cycle_x - 15, 30, cycle_x + 15, 30, (1, 0.5, 0))  # Lowered Seat
+    
+    dda(cycle_x + 60, -50, cycle_x + 80, 30, (0.8, 0.5, 0.5))  # Raised Handle Bar
+    dda(cycle_x + 80, 30, cycle_x + 60, 40, (0.8, 0.5, 0.5))
+    dda(cycle_x + 80, 30, cycle_x + 100, 30, (0.8, 0.5, 0.5))  # Raised Handle Extension
+    
+    midpoint_circle(cycle_x, -50, 10, (1, 1, 1))  # Pedal Center
+    draw_pedals(cycle_x, -50, 15, (1, 1, 0))  # Pedals
+    
     glFlush()
 
-def main():
-    glutInit()
-    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB)
-    glutInitWindowSize(600, 600)
-    glutInitWindowPosition(100, 100)
-    glutCreateWindow(b"Fixed Bicycle Drawing")
-    glClearColor(0.0, 0.0, 0.0, 1.0)
-    gluOrtho2D(-1, 1, -1, 1)
-    glutDisplayFunc(display)
-    glutMainLoop()
+def update(value):
+    global cycle_x, pedal_angle
+    cycle_x += 2  # Move the cycle forward
+    pedal_angle = (pedal_angle + 10) % 360  # Rotate pedals forward
+    if cycle_x > 100:
+        cycle_x = -100
+    glutPostRedisplay()
+    glutTimerFunc(50, update, 0)
 
-if __name__ == "__main__":
-    main()
+def init():
+    glClearColor(0, 0, 0, 1)
+    gluOrtho2D(-120, 120, -100, 100)
+
+glutInit()
+glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB)
+glutInitWindowSize(600, 600)
+glutCreateWindow(b"Animated Cycle with Improved Shape")
+glutDisplayFunc(draw_cycle)
+glutTimerFunc(50, update, 0)
+init()
+glutMainLoop()
+
+
+
+
+
+
+
+
+

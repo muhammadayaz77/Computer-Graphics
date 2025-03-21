@@ -5,7 +5,7 @@ from OpenGL.GLU import *
 def display():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)  # Clear the screen
 
-    glColor3f(1.0, 0.0, 0.0)  # Set color to red (RGB format)
+    glColor3f(0.0, 1.0, 0.0)  # Set color to red (RGB format)
     glPointSize(5)  # Set point size
 
     glBegin(GL_POINTS)  # Start drawing points
